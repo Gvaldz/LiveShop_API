@@ -1,0 +1,52 @@
+package application
+
+import (
+	"errors"
+	"liveshop_api/src/core"
+	auth "liveshop_api/src/internal/services/auth/domain"
+	user_repo "liveshop_api/src/internal/users/domain"
+	user "liveshop_api/src/internal/users/domain/entities"
+)
+
+type Login struct {
+	authRepo     auth.AuthRepository
+	userRepo     user_repo.UserRepository
+	tokenService auth.TokenService
+	hasher       core.PasswordHasher
+}
+
+func NewLogin(
+	authRepo auth.AuthRepository,
+	userRepo user_repo.UserRepository,
+	tokenService auth.TokenService,
+	hasher core.PasswordHasher,
+) *Login {
+	return &Login{
+		authRepo:     authRepo,
+		userRepo:     userRepo,
+		tokenService: tokenService,
+		hasher:       hasher,
+	}
+}
+
+func (uc *Login) Execute(credentials user.User) (auth.Token, error) {
+	user, err := uc.authRepo.FindUserBynumber(credentials.Number)
+	if err != nil {
+		return auth.Token{}, errors.New("datos incorrectos")
+	}
+
+	if err := uc.hasher.Compare(user.Password, credentials.Password); err != nil {
+		return auth.Token{}, errors.New("contraseña incorrecta")
+	}
+
+	token, err := uc.tokenService.GenerateToken(user.IdUser, user.Number)
+	if err != nil {
+		return auth.Token{}, errors.New("fallo en generar token")
+	}
+
+	go func() {
+		_ = uc.authRepo.UpdateLastLogin(user.IdUser)
+	}()
+
+	return token, nil
+}
