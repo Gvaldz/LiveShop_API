@@ -5,6 +5,7 @@ import (
 	productsDeps "liveshop_api/src/internal/products/infrastructure"
 	loginDeps "liveshop_api/src/internal/services/auth/infrastructure"
 	usersDeps "liveshop_api/src/internal/users/infrastructure"
+	ordersDeps "liveshop_api/src/internal/orders/infrastructure"
 	"liveshop_api/src/server"
 	"liveshop_api/src/server/middleware"
 	"log"
@@ -27,6 +28,9 @@ func Init() {
 	productDependencies := productsDeps.NewProductDependencies(db, authMiddleware)
 	productsRoutes := productDependencies.GetRoutes()
 
+	ordersDependencies := ordersDeps.NewOrderDependencies(db, authMiddleware)
+	orderRoutes := ordersDependencies.GetRoutes()
+
 	userDependencies := usersDeps.NewUserDependencies(
 		db,
 		hasher,
@@ -39,5 +43,5 @@ func Init() {
 	authDependencies := loginDeps.NewAuthDependencies(db, hasher, userRepo)
 	authRoutes := authDependencies.GetRoutes()
 
-	server.Run(authRoutes, userRoutes, productsRoutes)
+	server.Run(authRoutes, userRoutes, productsRoutes, orderRoutes)
 }

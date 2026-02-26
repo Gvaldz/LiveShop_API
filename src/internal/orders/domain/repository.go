@@ -1,6 +1,6 @@
 package domain
 
-import "liveshop_api/src/internal/order/domain/entities"
+import "liveshop_api/src/internal/orders/domain/entities"
 
 type IOrder interface {
 	Save(order entities.Order) error
