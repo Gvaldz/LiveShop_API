@@ -36,7 +36,7 @@ func (uc *Login) Execute(credentials user.User) (auth.Token, error) {
 	}
 
 	if err := uc.hasher.Compare(user.Password, credentials.Password); err != nil {
-		return auth.Token{}, errors.New("datos incorrectos")
+		return auth.Token{}, errors.New("contraseña incorrecta")
 	}
 
 	token, err := uc.tokenService.GenerateToken(user.IdUser, user.Number)

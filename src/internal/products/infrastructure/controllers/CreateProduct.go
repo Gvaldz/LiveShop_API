@@ -24,11 +24,12 @@ func NewProductControllers(c *application.CreateProduct, l *application.ListProd
 type ProductRequest struct {
 	Name  string  `json:"name" binding:"required"`
 	Price float64 `json:"price" binding:"required"`
-	Stock int32   `json:"stock"` // No requerido obligatorio, por defecto será 0
+	Stock int32   `json:"stock"` 
+	ImgURL string `json:"img_url"`
 }
 
 func (h *ProductControllers) Create(c *gin.Context) {
-	userIDInterface, _ := c.Get("userID") // Asumimos que el middleware valida que existe
+	userIDInterface, _ := c.Get("userID") 
 	sellerID := userIDInterface.(int32)
 
 	var req ProductRequest
@@ -42,6 +43,7 @@ func (h *ProductControllers) Create(c *gin.Context) {
 		Price:    req.Price,
 		Stock:    req.Stock,
 		SellerID: sellerID,
+		ImgURL:   req.ImgURL,
 	}
 
 	if err := h.create.Execute(product); err != nil {
@@ -103,6 +105,7 @@ func (h *ProductControllers) Update(c *gin.Context) {
 		Name:      req.Name,
 		Price:     req.Price,
 		Stock:     req.Stock,
+		ImgURL:    req.ImgURL,
 	}
 
 	if err = h.update.Execute(product); err != nil {
