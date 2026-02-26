@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"liveshop_api/src/internal/services/auth/application"
 	"liveshop_api/src/internal/users/domain/entities"
 	"net/http"
@@ -23,8 +22,6 @@ func (c *LoginController) Login(ctx *gin.Context) {
         ctx.JSON(http.StatusBadRequest, gin.H{"error": "petición inválida", "detalle": err.Error()})
         return
     }
-
-    fmt.Println("Intentando login con Number:", credentials.Number, "y Password:", credentials.Password)
 
     token, err := c.loginUC.Execute(credentials)
     if err != nil {
