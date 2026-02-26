@@ -61,3 +61,4 @@ func NewUpdateProduct(repo domain.ProductRepository) *UpdateProduct {
 func (up *UpdateProduct) Execute(product entities.Product) error {
 	return up.repo.Update(product)
 }
+

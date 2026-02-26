@@ -89,3 +89,40 @@ func (r *productRepo) Delete(idProduct int32, sellerID int32) error {
     log.Println("[productRepo] - producto eliminado correctamente")
     return nil
 }
+
+func (r *productRepo) GetByIdPublic(id int32) (entities.Product, error) {
+    var product entities.Product
+    query := "SELECT id, seller_id, name, price, stock FROM products WHERE id = ?"
+
+    err := r.db.QueryRow(query, id).Scan(
+        &product.IdProduct, 
+        &product.SellerID, 
+        &product.Name, 
+        &product.Price, 
+        &product.Stock,
+    )
+    if err != nil {
+        return product, fmt.Errorf("producto no encontrado: %w", err)
+    }
+    return product, nil
+}
+
+func (r *productRepo) GetAllPublic() ([]entities.Product, error) {
+    query := "SELECT id, seller_id, name, price, stock FROM products WHERE stock > 0"
+
+    rows, err := r.db.Query(query)
+    if err != nil {
+        return nil, fmt.Errorf("error al obtener el catálogo de productos: %w", err)
+    }
+    defer rows.Close()
+
+    var products []entities.Product
+    for rows.Next() {
+        var product entities.Product
+        if err := rows.Scan(&product.IdProduct, &product.SellerID, &product.Name, &product.Price, &product.Stock); err != nil {
+            return nil, fmt.Errorf("error al escanear producto: %w", err)
+        }
+        products = append(products, product)
+    }
+    return products, nil
+}

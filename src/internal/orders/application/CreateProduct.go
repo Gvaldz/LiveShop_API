@@ -1,17 +1,46 @@
 package application
 
 import (
+	"fmt"
 	"liveshop_api/src/internal/orders/domain"
 	"liveshop_api/src/internal/orders/domain/entities"
+	productDomain "liveshop_api/src/internal/products/domain"
 )
 
-// --- Create ---
 type CreateOrder struct {
-	repo domain.IOrder
+	repo     domain.IOrder
+	notifier domain.INotifier 
+    productRepo productDomain.ProductRepository 
 }
-func NewCreateOrder(repo domain.IOrder) *CreateOrder { return &CreateOrder{repo: repo} }
-func (co *CreateOrder) Execute(order entities.Order) error { return co.repo.Save(order) }
 
+func NewCreateOrder(repo domain.IOrder, notifier domain.INotifier, productRepo productDomain.ProductRepository) *CreateOrder {
+	return &CreateOrder{repo: repo, notifier: notifier, productRepo: productRepo}
+}
+
+func (co *CreateOrder) Execute(order entities.Order) error {
+    if err := co.repo.Save(order); err != nil {
+        return err
+    }
+
+    product, err := co.productRepo.GetByIdPublic(order.ProductID)
+    if err == nil {
+        notificacion := map[string]interface{}{
+            "type":         "NEW_ORDER",
+			"buyer_name":   order.BuyerName,
+			"buyer_number": order.BuyerNumber,
+            "product_id":   order.ProductID,
+            "product_name": product.Name, 
+            "quantity":     order.Quantity,
+            "message":      "¡Tienes un nuevo pedido!",
+        }
+        
+        go co.notifier.NotifyUser(product.SellerID, notificacion)
+    } else {
+        fmt.Println("Error buscando producto para notificar:", err) 
+    }
+
+    return nil
+}
 // --- Delete ---
 type DeleteOrder struct {
 	repo domain.IOrder

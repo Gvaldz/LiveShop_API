@@ -8,4 +8,6 @@ type ProductRepository interface {
     GetAll(sellerID int32) ([]entities.Product, error)
     GetById(id int32, sellerID int32) (entities.Product, error)
     Delete(id int32, sellerID int32) error
+    GetByIdPublic(id int32) (entities.Product, error)
+    GetAllPublic() ([]entities.Product, error)
 }

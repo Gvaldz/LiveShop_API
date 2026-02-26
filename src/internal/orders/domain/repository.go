@@ -8,4 +8,5 @@ type IOrder interface {
 	GetAll(buyerID int32) ([]entities.Order, error)
 	GetById(id int32, buyerID int32) (entities.Order, error)
 	Delete(id int32, buyerID int32) error
+
 }
