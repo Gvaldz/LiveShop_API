@@ -21,12 +21,12 @@ func NewJWTService() *JWTService {
 	return &JWTService{secretKey: key}
 }
 
-func (s *JWTService) GenerateToken(userID int32, email string) (domain.Token, error) {
+func (s *JWTService) GenerateToken(userID int32, number string) (domain.Token, error) {
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 
 	claims := jwt.MapClaims{
 		"user_id": userID,
-		"email":   email,
+		"number":  number,
 		"exp":     expiresAt,
 	}
 

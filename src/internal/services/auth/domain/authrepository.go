@@ -5,6 +5,6 @@ import (
 )
 
 type AuthRepository interface {
-	FindUserByEmail(email string) (user.User, error)
+	FindUserBynumber(number string) (user.User, error)
 	UpdateLastLogin(userID int32) error
 }

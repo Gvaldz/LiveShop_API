@@ -3,8 +3,8 @@ package infrastructure
 import (
 	"database/sql"
 	"fmt"
-	users "rukias_vet/src/internal/users/domain"
-	user "rukias_vet/src/internal/users/domain/entities"
+	users "liveshop_api/src/internal/users/domain"
+	user "liveshop_api/src/internal/users/domain/entities"
 )
 
 type UserRepository struct {
@@ -17,9 +17,9 @@ func NewUserRepository(DB *sql.DB) users.UserRepository {
 
 func (r *UserRepository) CreateUser(u user.User) (user.User, error) {
 
-	query := "INSERT INTO users (name, lastname, password, email) VALUES (?, ?, ?, ?)"
-	
-	result, err := r.DB.Exec(query, u.Name, u.Lastname, u.Password, u.Email)
+	query := "INSERT INTO users (name, password, number) VALUES (?, ?, ?, ?)"
+
+	result, err := r.DB.Exec(query, u.Name, u.Password, u.Number)
 	if err != nil {
 		return user.User{}, fmt.Errorf("error al crear usuario: %w", err)
 	}
@@ -30,15 +30,14 @@ func (r *UserRepository) CreateUser(u user.User) (user.User, error) {
 	}
 
 	return user.User{
-		IdUser:   int32(id),
-		Name:     u.Name,
-		Lastname: u.Lastname,
-		Email:    u.Email,
+		IdUser: int32(id),
+		Name:   u.Name,
+		Number: u.Number,
 	}, nil
 }
 
 func (r *UserRepository) GetAllUsers() ([]user.User, error) {
-	query := "SELECT iduser, name, lastname, email FROM users"
+	query := "SELECT iduser, name, number FROM users"
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener usuarios: %w", err)
@@ -48,7 +47,7 @@ func (r *UserRepository) GetAllUsers() ([]user.User, error) {
 	var usersList []user.User
 	for rows.Next() {
 		var u user.User
-		if err := rows.Scan(&u.IdUser, &u.Name, &u.Lastname, &u.Email); err != nil {
+		if err := rows.Scan(&u.IdUser, &u.Name, &u.Number); err != nil {
 			return nil, fmt.Errorf("error al escanear user: %w", err)
 		}
 		usersList = append(usersList, u)
@@ -63,39 +62,38 @@ func (r *UserRepository) GetUserByID(iduser int32) (user.User, error) {
 	}
 
 	var u user.User
-	query := "SELECT iduser, name, lastname, email FROM users WHERE iduser = ?"
-	
-	err := r.DB.QueryRow(query, iduser).Scan(&u.IdUser, &u.Name, &u.Lastname, &u.Email) 
-	
+	query := "SELECT iduser, name, number FROM users WHERE iduser = ?"
+
+	err := r.DB.QueryRow(query, iduser).Scan(&u.IdUser, &u.Name, &u.Number)
+
 	if err != nil {
 		return u, fmt.Errorf("error al obtener usuario: %w", err)
 	}
 	return u, nil
 }
 
-func (r *UserRepository) GetUserByEmail(email string) (user.User, error) {
+func (r *UserRepository) GetUserBynumber(number string) (user.User, error) {
 	var u user.User
-	query := "SELECT iduser, name, lastname, email, password FROM users WHERE email = ?"
-	
-	err := r.DB.QueryRow(query, email).Scan(
-		&u.IdUser, 
-		&u.Name,    
-		&u.Lastname,  
-		&u.Password,    
+	query := "SELECT iduser, name, number, password FROM users WHERE number = ?"
+
+	err := r.DB.QueryRow(query, number).Scan(
+		&u.IdUser,
+		&u.Name,
+		&u.Password,
 		&u.Password,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return u, fmt.Errorf("usuario no encontrado")
 		}
-		return u, fmt.Errorf("error al obtener usuario por email: %w", err)
+		return u, fmt.Errorf("error al obtener usuario por number: %w", err)
 	}
 	return u, nil
 }
 
 func (r *UserRepository) UpdateUser(id int32, u user.User) error {
-	query := "UPDATE users SET name = ?, lastname = ?, email = ? WHERE iduser = ?"
-	result, err := r.DB.Exec(query, u.Name, u.Lastname, u.Email, id)
+	query := "UPDATE users SET name = ?, number = ? WHERE iduser = ?"
+	result, err := r.DB.Exec(query, u.Name, u.Number, id)
 	if err != nil {
 		return fmt.Errorf("error al actualizar usuario: %w", err)
 	}

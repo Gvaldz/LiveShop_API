@@ -30,7 +30,7 @@ func NewLogin(
 }
 
 func (uc *Login) Execute(credentials user.User) (auth.Token, error) {
-	user, err := uc.authRepo.FindUserByEmail(credentials.Email)
+	user, err := uc.authRepo.FindUserBynumber(credentials.Number)
 	if err != nil {
 		return auth.Token{}, errors.New("datos incorrectos")
 	}
@@ -39,7 +39,7 @@ func (uc *Login) Execute(credentials user.User) (auth.Token, error) {
 		return auth.Token{}, errors.New("datos incorrectos")
 	}
 
-	token, err := uc.tokenService.GenerateToken(user.IdUser, user.Email)
+	token, err := uc.tokenService.GenerateToken(user.IdUser, user.Number)
 	if err != nil {
 		return auth.Token{}, errors.New("fallo en generar token")
 	}

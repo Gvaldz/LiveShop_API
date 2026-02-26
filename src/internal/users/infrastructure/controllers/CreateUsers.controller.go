@@ -35,8 +35,7 @@ func (h *CreateUserController) CreateUser(c *gin.Context) {
 		"user": gin.H{
 			"id":       createdUser.IdUser,
 			"name":     createdUser.Name,
-			"lastname": createdUser.Lastname,
-			"email":    createdUser.Email,
+			"number":    createdUser.Number,
 		},
 	})
 }

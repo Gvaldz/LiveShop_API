@@ -15,11 +15,11 @@ func NewAuthRepository(DB *sql.DB) domain.AuthRepository {
 	return &AuthRepository{DB: DB}
 }
 
-func (r *AuthRepository) FindUserByEmail(email string) (user.User, error) {
+func (r *AuthRepository) FindUserBynumber(number string) (user.User, error) {
 	var u user.User
-	query := "SELECT iduser, email, password FROM users WHERE email = ?"
+	query := "SELECT iduser, number, password FROM users WHERE number = ?"
 
-	err := r.DB.QueryRow(query, email).Scan(&u.IdUser, &u.Email, &u.Password)
+	err := r.DB.QueryRow(query, number).Scan(&u.IdUser, &u.Number, &u.Password)
 	if err != nil {
 		return u, err
 	}
@@ -37,7 +37,7 @@ func (r *AuthRepository) UpdateLastLogin(userID int32) error {
 
 func (r *AuthRepository) FindUserByID(userID int32) (user.User, error) {
 	var user user.User
-	query := `SELECT iduser, email, password, FROM users WHERE iduser = ?`
-	err := r.DB.QueryRow(query, userID).Scan(&user.IdUser, &user.Email, &user.Password)
+	query := `SELECT iduser, number, password, FROM users WHERE iduser = ?`
+	err := r.DB.QueryRow(query, userID).Scan(&user.IdUser, &user.Number, &user.Password)
 	return user, err
 }
