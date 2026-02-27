@@ -10,15 +10,25 @@ import (
 )
 
 type ProductControllers struct {
-	create *application.CreateProduct
-	list   *application.ListProducts
-	get    *application.GetProductById
-	update *application.UpdateProduct
-	delete *application.DeleteProduct
+    create       *application.CreateProduct
+    list         *application.ListProducts
+    get          *application.GetProductById
+    update       *application.UpdateProduct
+    delete       *application.DeleteProduct
+    listPublic   *application.ListAllProductsPublic
+    getPublic    *application.GetProductByIdPublic // <--- NUEVO
 }
 
-func NewProductControllers(c *application.CreateProduct, l *application.ListProducts, g *application.GetProductById, u *application.UpdateProduct, d *application.DeleteProduct) *ProductControllers {
-	return &ProductControllers{create: c, list: l, get: g, update: u, delete: d}
+func NewProductControllers(c *application.CreateProduct, l *application.ListProducts, g *application.GetProductById, u *application.UpdateProduct, d *application.DeleteProduct, lp *application.ListAllProductsPublic, gp *application.GetProductByIdPublic) *ProductControllers {
+    return &ProductControllers{
+        create:     c, 
+        list:       l, 
+        get:        g, 
+        update:     u, 
+        delete:     d, 
+        listPublic: lp,
+        getPublic:  gp, 
+    }
 }
 
 type ProductRequest struct {

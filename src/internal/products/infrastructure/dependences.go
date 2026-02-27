@@ -20,15 +20,17 @@ func NewProductDependencies(db *sql.DB, authMiddleware gin.HandlerFunc) *Product
 }
 
 func (d *ProductDependencies) GetRoutes() *ProductRoutes {
-	repo := NewProductRepo(d.DB)
+    repo := NewProductRepo(d.DB)
 
-	createUC := application.NewCreateProduct(repo)
-	listUC := application.NewListProducts(repo)
-	getByIdUC := application.NewGetProductById(repo)
-	updateUC := application.NewUpdateProduct(repo)
-	deleteUC := application.NewDeleteProduct(repo)
+    createUC := application.NewCreateProduct(repo)
+    listUC := application.NewListProducts(repo)
+    getByIdUC := application.NewGetProductById(repo)
+    updateUC := application.NewUpdateProduct(repo)
+    deleteUC := application.NewDeleteProduct(repo)
+    listPublicUC := application.NewListAllProductsPublic(repo)
+	getByIdPublicUC := application.NewGetProductByIdPublic(repo)
 
-	productControllers := controllers.NewProductControllers(createUC, listUC, getByIdUC, updateUC, deleteUC)
+    productControllers := controllers.NewProductControllers(createUC, listUC, getByIdUC, updateUC, deleteUC, listPublicUC, getByIdPublicUC)
 
-	return NewProductRoutes(productControllers, d.AuthMiddleware)
+    return NewProductRoutes(productControllers, d.AuthMiddleware)
 }

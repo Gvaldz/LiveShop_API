@@ -5,6 +5,7 @@ import (
 	userRouters "liveshop_api/src/internal/users/infrastructure"
 	productsRouters "liveshop_api/src/internal/products/infrastructure"
 	ordersRouters "liveshop_api/src/internal/orders/infrastructure"
+	wsRouters "liveshop_api/src/internal/shared/infrastructure"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,7 @@ func Run(
 	userRoutes *userRouters.UserRoutes,
 	productRoutes *productsRouters.ProductRoutes,
 	orderRoutes *ordersRouters.OrderRoutes,
+	wsRoutes *wsRouters.WSRoutes,
 ) {
 	r := gin.Default()
 
@@ -28,6 +30,7 @@ func Run(
 	userRoutes.AttachRoutes(r)
 	productRoutes.AttachRoutes(r)
 	orderRoutes.AttachRoutes(r)
+	wsRoutes.AttachRoutes(r)
 
 	r.Run(":8080")
 }

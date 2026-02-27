@@ -62,3 +62,27 @@ func (up *UpdateProduct) Execute(product entities.Product) error {
 	return up.repo.Update(product)
 }
 
+type GetProductByIdPublic struct {
+    repo domain.ProductRepository
+}
+
+func NewGetProductByIdPublic(repo domain.ProductRepository) *GetProductByIdPublic {
+    return &GetProductByIdPublic{repo: repo}
+}
+
+func (g *GetProductByIdPublic) Execute(id int32) (entities.Product, error) {
+    return g.repo.GetByIdPublic(id)
+}
+
+type ListAllProductsPublic struct {
+    repo domain.ProductRepository
+}
+
+func NewListAllProductsPublic(repo domain.ProductRepository) *ListAllProductsPublic {
+    return &ListAllProductsPublic{repo: repo}
+}
+
+func (l *ListAllProductsPublic) Execute() ([]entities.Product, error) {
+    return l.repo.GetAllPublic()
+}
+
