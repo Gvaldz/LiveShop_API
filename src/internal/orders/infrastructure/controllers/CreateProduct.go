@@ -41,7 +41,7 @@ func (h *OrderControllers) Create(c *gin.Context) {
 		BuyerID:     buyerID,
 		ProductID:   req.ProductID,
 		Quantity:    req.Quantity,
-		IsDelivered: false, // Por defecto al crear un pedido no está entregado
+		IsDelivered: false, 
 	}
 
 	if err := h.create.Execute(order); err != nil {

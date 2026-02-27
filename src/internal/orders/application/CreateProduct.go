@@ -5,16 +5,18 @@ import (
 	"liveshop_api/src/internal/orders/domain"
 	"liveshop_api/src/internal/orders/domain/entities"
 	productDomain "liveshop_api/src/internal/products/domain"
+	userDomain "liveshop_api/src/internal/users/domain"
 )
 
 type CreateOrder struct {
-	repo     domain.IOrder
-	notifier domain.INotifier 
-    productRepo productDomain.ProductRepository 
+    repo        domain.IOrder
+    notifier    domain.INotifier
+    productRepo productDomain.ProductRepository
+    userRepo    userDomain.UserRepository 
 }
 
-func NewCreateOrder(repo domain.IOrder, notifier domain.INotifier, productRepo productDomain.ProductRepository) *CreateOrder {
-	return &CreateOrder{repo: repo, notifier: notifier, productRepo: productRepo}
+func NewCreateOrder(r domain.IOrder, n domain.INotifier, p productDomain.ProductRepository, u userDomain.UserRepository) *CreateOrder {
+    return &CreateOrder{repo: r, notifier: n, productRepo: p, userRepo: u}
 }
 
 func (co *CreateOrder) Execute(order entities.Order) error {
@@ -22,21 +24,24 @@ func (co *CreateOrder) Execute(order entities.Order) error {
         return err
     }
 
+    buyer, err := co.userRepo.GetUserByID(order.BuyerID)
+    if err != nil {
+        fmt.Println("Error obteniendo datos del comprador:", err)
+    }
+
     product, err := co.productRepo.GetByIdPublic(order.ProductID)
     if err == nil {
         notificacion := map[string]interface{}{
             "type":         "NEW_ORDER",
-			"buyer_name":   order.BuyerName,
-			"buyer_number": order.BuyerNumber,
             "product_id":   order.ProductID,
-            "product_name": product.Name, 
+            "product_name": product.Name,
             "quantity":     order.Quantity,
+            "buyer_name":   buyer.Name,   
+            "buyer_number": buyer.Number, 
             "message":      "¡Tienes un nuevo pedido!",
         }
         
         go co.notifier.NotifyUser(product.SellerID, notificacion)
-    } else {
-        fmt.Println("Error buscando producto para notificar:", err) 
     }
 
     return nil

@@ -90,7 +90,6 @@ func (r *orderRepo) GetById(id int32, buyerID int32) (entities.Order, error) {
 
     order.BuyerID = buyerID
     
-    // Agregamos BuyerName y BuyerNumber al Scan
     err := r.db.QueryRow(query, id, buyerID).Scan(&order.IdOrder, &order.ProductID, &order.Quantity, &order.IsDelivered, &order.CreatedAt, &order.BuyerName, &order.BuyerNumber)
     if err != nil {
         return order, fmt.Errorf("pedido no encontrado o acceso denegado: %w", err)

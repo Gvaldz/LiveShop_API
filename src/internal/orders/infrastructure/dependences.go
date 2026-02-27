@@ -6,6 +6,7 @@ import (
 	"liveshop_api/src/internal/orders/domain"
 	"liveshop_api/src/internal/orders/infrastructure/controllers"
 	products_infra "liveshop_api/src/internal/products/infrastructure"
+	users_infra "liveshop_api/src/internal/users/infrastructure"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,8 +28,9 @@ func NewOrderDependencies(db *sql.DB, authMiddleware gin.HandlerFunc, notifier d
 func (d *OrderDependencies) GetRoutes() *OrderRoutes {
 	repo := NewOrderRepo(d.DB)
 	productRepo := products_infra.NewProductRepo(d.DB)
+	userRepo := users_infra.NewUserRepository(d.DB)
 
-	createUC := application.NewCreateOrder(repo, d.Notifier, productRepo)
+	createUC := application.NewCreateOrder(repo, d.Notifier, productRepo, userRepo)
 	listUC := application.NewListOrders(repo)
 	getByIdUC := application.NewGetOrderById(repo)
 	updateUC := application.NewUpdateOrder(repo)
