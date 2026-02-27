@@ -30,22 +30,31 @@ func (co *CreateOrder) Execute(order entities.Order) error {
     }
 
     product, err := co.productRepo.GetByIdPublic(order.ProductID)
-    if err == nil {
-        notificacion := map[string]interface{}{
-            "type":         "NEW_ORDER",
-            "product_id":   order.ProductID,
-            "product_name": product.Name,
-            "quantity":     order.Quantity,
-            "buyer_name":   buyer.Name,   
-            "buyer_number": buyer.Number, 
-            "message":      "¡Tienes un nuevo pedido!",
-        }
-        
-        go co.notifier.NotifyUser(product.SellerID, notificacion)
+    if err != nil {
+        return fmt.Errorf("pedido guardado pero error al recuperar info para notificar: %w", err)
     }
+
+    stockUpdate := map[string]interface{}{
+        "type":       "STOCK_UPDATE",
+        "product_id": product.IdProduct,
+        "new_stock":  product.Stock, 
+    }
+    go co.notifier.Broadcast(stockUpdate)
+
+    notificacionVendedor := map[string]interface{}{
+        "type":         "NEW_ORDER",
+        "product_id":   order.ProductID,
+        "product_name": product.Name,
+        "quantity":     order.Quantity,
+        "buyer_name":   buyer.Name,
+        "buyer_number": buyer.Number,
+        "message":      "¡Tienes un nuevo pedido!",
+    }
+    go co.notifier.NotifyUser(product.SellerID, notificacionVendedor)
 
     return nil
 }
+
 // --- Delete ---
 type DeleteOrder struct {
 	repo domain.IOrder
